@@ -200,7 +200,7 @@ def write_markdown_reports(missing_details: list[dict[str, object]], output_dir:
         ]
         if entry["path_missing"]:
             detail_lines.append("- Matching help guide path was not found.")
-        missing_feature_terms = list(entry.get("missing_feature_terms", []))
+        missing_feature_terms = entry.get("missing_feature_terms", [])
         if missing_feature_terms:
             detail_lines.append("- Potentially undocumented features on this page:")
             detail_lines.extend(f"  - `{term}`" for term in missing_feature_terms)
