@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+missing-help-guides-sample/
+missing-help-guides/
