@@ -5,10 +5,10 @@ A small Python CLI that crawls a help site and an app site, compares terminology
 ## Usage
 
 ```bash
-python /home/runner/work/helpguideschecker/helpguideschecker/helpguideschecker.py \
+python helpguideschecker.py \
   --help-url https://help.smartsurvey.co.uk \
   --app-url https://app.smartsurvey.co.uk \
-  --output-dir /home/runner/work/helpguideschecker/helpguideschecker/missing-help-guides
+  --output-dir missing-help-guides
 ```
 
 The command writes:
@@ -19,5 +19,5 @@ The command writes:
 ## Tests
 
 ```bash
-python -m unittest discover -s /home/runner/work/helpguideschecker/helpguideschecker/tests -v
+python -m unittest discover -s tests -v
 ```
