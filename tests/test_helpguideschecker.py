@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from helpguideschecker import compare_sites, crawl_site, write_markdown_reports
+from helpguideschecker import _safe_filename, compare_sites, crawl_site, write_markdown_reports
 
 
 class CrawlAndCompareTests(unittest.TestCase):
@@ -50,7 +50,7 @@ class CrawlAndCompareTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             write_markdown_reports(missing_details, Path(temp_dir))
             summary = Path(temp_dir) / "summary.md"
-            detail = Path(temp_dir) / "workflows.md"
+            detail = Path(temp_dir) / _safe_filename("https://app.example.com/workflows")
 
             self.assertTrue(summary.exists())
             self.assertTrue(detail.exists())

@@ -202,7 +202,7 @@ def write_markdown_reports(missing_details: list[dict[str, object]], output_dir:
 
 
 def run_check(
-    help_url: str,
+    docs_url: str,
     app_url: str,
     output_dir: Path,
     max_help_pages: int = 75,
@@ -212,7 +212,7 @@ def run_check(
     def _fetcher(url: str) -> str:
         return fetch_url(url, timeout=timeout)
 
-    help_pages = crawl_site(help_url, max_help_pages, _fetcher)
+    help_pages = crawl_site(docs_url, max_help_pages, _fetcher)
     app_pages = crawl_site(app_url, max_app_pages, _fetcher)
     missing = compare_sites(app_pages, help_pages)
     write_markdown_reports(missing, output_dir)
@@ -232,7 +232,7 @@ def main() -> None:
     args = parser.parse_args()
 
     missing = run_check(
-        help_url=args.docs_url,
+        docs_url=args.docs_url,
         app_url=args.app_url,
         output_dir=Path(args.output_dir),
         max_help_pages=args.max_help_pages,
