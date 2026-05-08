@@ -143,22 +143,29 @@ def compare_sites(
     app_pages: dict[str, set[str]],
     help_pages: dict[str, set[str]],
 ) -> list[dict[str, object]]:
-    """Return app pages with missing path/term coverage in help pages."""
+    """Return app pages with missing path/feature coverage in help pages."""
     help_terms: set[str] = set()
-    help_paths = {urlparse(url).path.rstrip("/") for url in help_pages}
-    for terms in help_pages.values():
+    help_terms_by_path: dict[str, set[str]] = {}
+    for url, terms in help_pages.items():
+        path = urlparse(url).path.rstrip("/")
+        if path not in help_terms_by_path:
+            help_terms_by_path[path] = set()
+        help_terms_by_path[path].update(terms)
         help_terms.update(terms)
 
     missing: list[dict[str, object]] = []
     for app_url, app_terms in sorted(app_pages.items()):
-        missing_terms = sorted(term for term in app_terms if term not in help_terms)
         app_path = urlparse(app_url).path.rstrip("/")
-        path_missing = bool(app_path and app_path not in help_paths)
-        if path_missing or missing_terms:
+        matched_help_terms = help_terms_by_path.get(app_path, set())
+        path_missing = bool(app_path and app_path not in help_terms_by_path)
+        missing_feature_terms = sorted(term for term in app_terms if term not in matched_help_terms)
+        missing_terms = sorted(term for term in app_terms if term not in help_terms)
+        if path_missing or missing_feature_terms:
             missing.append(
                 {
                     "app_url": app_url,
                     "path_missing": path_missing,
+                    "missing_feature_terms": missing_feature_terms,
                     "missing_terms": missing_terms,
                 }
             )
@@ -195,12 +202,19 @@ def write_markdown_reports(missing_details: list[dict[str, object]], output_dir:
         ]
         if entry["path_missing"]:
             detail_lines.append("- Matching help guide path was not found.")
+        raw_missing_feature_terms = entry.get("missing_feature_terms", entry.get("missing_terms", []))
+        missing_feature_terms = (
+            list(raw_missing_feature_terms) if isinstance(raw_missing_feature_terms, list) else []
+        )
+        if missing_feature_terms:
+            detail_lines.append("- Potentially undocumented features on this page:")
+            detail_lines.extend(f"  - `{term}`" for term in missing_feature_terms)
         raw_missing_terms = entry.get("missing_terms", [])
         missing_terms = list(raw_missing_terms) if isinstance(raw_missing_terms, list) else []
-        if missing_terms:
+        if missing_terms and missing_terms != missing_feature_terms:
             detail_lines.append("- Potentially undocumented terms:")
             detail_lines.extend(f"  - `{term}`" for term in missing_terms)
-        if not entry["path_missing"] and not missing_terms:
+        if not entry["path_missing"] and not missing_feature_terms and not missing_terms:
             detail_lines.append("- No obvious missing details detected.")
 
         (output_dir / filename).write_text("\n".join(detail_lines) + "\n", encoding="utf-8")

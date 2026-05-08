@@ -20,7 +20,25 @@ class CrawlAndCompareTests(unittest.TestCase):
         self.assertEqual(len(missing), 1)
         self.assertEqual(missing[0]["app_url"], "https://app.example.com/workflows")
         self.assertTrue(missing[0]["path_missing"])
+        self.assertIn("workflows", missing[0]["missing_feature_terms"])
+        self.assertIn("automation", missing[0]["missing_feature_terms"])
         self.assertIn("workflows", missing[0]["missing_terms"])
+
+    def test_compare_detects_missing_features_when_path_exists(self):
+        help_pages = {
+            "https://help.example.com/surveys": {"surveys", "questions", "create"},
+        }
+        app_pages = {
+            "https://app.example.com/surveys": {"surveys", "questions", "logic"},
+        }
+
+        missing = compare_sites(app_pages, help_pages)
+
+        self.assertEqual(len(missing), 1)
+        self.assertEqual(missing[0]["app_url"], "https://app.example.com/surveys")
+        self.assertFalse(missing[0]["path_missing"])
+        self.assertEqual(missing[0]["missing_feature_terms"], ["logic"])
+        self.assertEqual(missing[0]["missing_terms"], ["logic"])
 
     def test_crawl_same_domain_only(self):
         pages = {
@@ -55,7 +73,10 @@ class CrawlAndCompareTests(unittest.TestCase):
             self.assertTrue(summary.exists())
             self.assertTrue(detail.exists())
             self.assertIn("Missing Help Guide Details", summary.read_text(encoding="utf-8"))
-            self.assertIn("Potentially undocumented terms", detail.read_text(encoding="utf-8"))
+            self.assertIn(
+                "Potentially undocumented features on this page",
+                detail.read_text(encoding="utf-8"),
+            )
 
 
 if __name__ == "__main__":
