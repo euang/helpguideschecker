@@ -6,8 +6,8 @@ A small Python CLI that crawls a help site and an app site, compares terminology
 
 ```bash
 python helpguideschecker.py \
-  --help-site-url https://help.smartsurvey.co.uk \
-  --app-site-url https://app.smartsurvey.co.uk \
+  --docs-url https://help.smartsurvey.co.uk \
+  --app-url https://app.smartsurvey.co.uk \
   --output-dir missing-help-guides
 ```
 

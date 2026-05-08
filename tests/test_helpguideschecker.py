@@ -28,7 +28,11 @@ class CrawlAndCompareTests(unittest.TestCase):
             "https://app.example.com/surveys": "<title>Survey builder</title><h1>Create survey</h1>",
         }
 
-        crawled = crawl_site("https://app.example.com", max_pages=10, fetcher=pages.__getitem__)
+        crawled = crawl_site(
+            "https://app.example.com",
+            max_pages=10,
+            fetcher=lambda url: pages.get(url, ""),
+        )
 
         self.assertIn("https://app.example.com", crawled)
         self.assertIn("https://app.example.com/surveys", crawled)

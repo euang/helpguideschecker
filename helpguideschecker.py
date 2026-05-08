@@ -223,8 +223,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Compare SmartSurvey app functionality with help guide coverage.",
     )
-    parser.add_argument("--help-site-url", default="https://help.smartsurvey.co.uk")
-    parser.add_argument("--app-site-url", default="https://app.smartsurvey.co.uk")
+    parser.add_argument("--docs-url", default="https://help.smartsurvey.co.uk")
+    parser.add_argument("--app-url", default="https://app.smartsurvey.co.uk")
     parser.add_argument("--output-dir", default="missing-help-guides")
     parser.add_argument("--max-help-pages", type=int, default=75)
     parser.add_argument("--max-app-pages", type=int, default=75)
@@ -232,15 +232,15 @@ def main() -> None:
     args = parser.parse_args()
 
     missing = run_check(
-        help_url=args.help_site_url,
-        app_url=args.app_site_url,
+        help_url=args.docs_url,
+        app_url=args.app_url,
         output_dir=Path(args.output_dir),
         max_help_pages=args.max_help_pages,
         max_app_pages=args.max_app_pages,
         timeout=args.timeout,
     )
 
-    print(f"Compared {args.app_site_url} against {args.help_site_url}")
+    print(f"Compared {args.app_url} against {args.docs_url}")
     total_files = len(list(Path(args.output_dir).glob("*.md")))
     print(f"Generated {total_files} report files in {args.output_dir}")
 
