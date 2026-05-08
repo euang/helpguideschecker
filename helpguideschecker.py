@@ -148,9 +148,7 @@ def compare_sites(
     help_terms_by_path: dict[str, set[str]] = {}
     for url, terms in help_pages.items():
         path = urlparse(url).path.rstrip("/")
-        if path not in help_terms_by_path:
-            help_terms_by_path[path] = set()
-        help_terms_by_path[path].update(terms)
+        help_terms_by_path.setdefault(path, set()).update(terms)
         help_terms.update(terms)
 
     missing: list[dict[str, object]] = []
@@ -202,7 +200,7 @@ def write_markdown_reports(missing_details: list[dict[str, object]], output_dir:
         ]
         if entry["path_missing"]:
             detail_lines.append("- Matching help guide path was not found.")
-        raw_missing_feature_terms = entry.get("missing_feature_terms", entry.get("missing_terms", []))
+        raw_missing_feature_terms = entry.get("missing_feature_terms", [])
         missing_feature_terms = (
             list(raw_missing_feature_terms) if isinstance(raw_missing_feature_terms, list) else []
         )

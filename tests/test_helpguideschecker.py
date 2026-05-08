@@ -39,6 +39,7 @@ class CrawlAndCompareTests(unittest.TestCase):
         self.assertFalse(missing[0]["path_missing"])
         self.assertEqual(missing[0]["missing_feature_terms"], ["logic"])
         self.assertEqual(missing[0]["missing_terms"], ["logic"])
+        self.assertNotIn("create", missing[0]["missing_feature_terms"])
 
     def test_crawl_same_domain_only(self):
         pages = {
@@ -62,6 +63,7 @@ class CrawlAndCompareTests(unittest.TestCase):
             {
                 "app_url": "https://app.example.com/workflows",
                 "path_missing": True,
+                "missing_feature_terms": ["workflows", "automation"],
                 "missing_terms": ["workflows", "automation"],
             }
         ]
