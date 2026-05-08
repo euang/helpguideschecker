@@ -10,6 +10,8 @@ from urllib.parse import urljoin, urlparse
 from urllib.request import Request, urlopen
 
 
+SUMMARY_FILE_COUNT = 1
+
 _STOPWORDS = {
     "a",
     "an",
@@ -188,7 +190,8 @@ def write_markdown_reports(missing_details: list[dict[str, object]], output_dir:
         ]
         if entry["path_missing"]:
             detail_lines.append("- Matching help guide path was not found.")
-        missing_terms = entry["missing_terms"]
+        raw_missing_terms = entry.get("missing_terms", [])
+        missing_terms = list(raw_missing_terms) if isinstance(raw_missing_terms, list) else []
         if missing_terms:
             detail_lines.append("- Potentially undocumented terms:")
             detail_lines.extend(f"  - `{term}`" for term in missing_terms)
@@ -240,7 +243,7 @@ def main() -> None:
     )
 
     print(f"Compared {args.app_site_url} against {args.help_site_url}")
-    total_files = len(missing) + 1
+    total_files = len(missing) + SUMMARY_FILE_COUNT
     print(f"Generated {total_files} report files in {args.output_dir}")
 
 
