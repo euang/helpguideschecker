@@ -10,8 +10,6 @@ from urllib.parse import urljoin, urlparse
 from urllib.request import Request, urlopen
 
 
-SUMMARY_FILE_COUNT = 1
-
 _STOPWORDS = {
     "a",
     "an",
@@ -243,7 +241,7 @@ def main() -> None:
     )
 
     print(f"Compared {args.app_site_url} against {args.help_site_url}")
-    total_files = len(missing) + SUMMARY_FILE_COUNT
+    total_files = len(list(Path(args.output_dir).glob("*.md")))
     print(f"Generated {total_files} report files in {args.output_dir}")
 
 
