@@ -76,6 +76,7 @@ def fetch_url(url: str, timeout: float = 10.0) -> str:
 
 
 def _normalize_word(word: str) -> str | None:
+    """Normalize a token and drop stopwords/very short terms."""
     clean = re.sub(r"[^a-z0-9]+", "", word.lower())
     if len(clean) < 3 or clean in _STOPWORDS:
         return None
@@ -83,6 +84,7 @@ def _normalize_word(word: str) -> str | None:
 
 
 def _terms_from_path(url: str) -> set[str]:
+    """Extract normalized terms from URL path segments."""
     parsed = urlparse(url)
     segments = [segment for segment in parsed.path.split("/") if segment]
     words = re.split(r"[-_\W]+", " ".join(segments))
@@ -90,6 +92,7 @@ def _terms_from_path(url: str) -> set[str]:
 
 
 def _terms_from_html(html: str) -> tuple[set[str], list[str]]:
+    """Extract normalized terms and links from title/headings and anchors."""
     parser = _Extractor()
     parser.feed(html)
     combined = " ".join(parser.title_parts + parser.heading_parts)
@@ -103,6 +106,7 @@ def crawl_site(
     max_pages: int,
     fetcher: Callable[[str], str],
 ) -> dict[str, set[str]]:
+    """Breadth-first crawl of same-domain pages returning extracted terms per URL."""
     parsed_start = urlparse(start_url)
     domain = parsed_start.netloc
     queue: deque[str] = deque([start_url.rstrip("/")])
@@ -139,6 +143,7 @@ def compare_sites(
     app_pages: dict[str, set[str]],
     help_pages: dict[str, set[str]],
 ) -> list[dict[str, object]]:
+    """Return app pages with missing path/term coverage in help pages."""
     help_terms: set[str] = set()
     help_paths = {urlparse(url).path.rstrip("/") for url in help_pages}
     for terms in help_pages.values():
@@ -161,12 +166,14 @@ def compare_sites(
 
 
 def _safe_filename(url: str) -> str:
+    """Convert a URL path to a filesystem-safe markdown filename."""
     parsed = urlparse(url)
     base = parsed.path.strip("/") or "home"
     return re.sub(r"[^a-zA-Z0-9._-]+", "-", base) + ".md"
 
 
 def write_markdown_reports(missing_details: list[dict[str, object]], output_dir: Path) -> None:
+    """Write summary and per-page markdown files describing missing details."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
     summary_lines = ["# Missing Help Guide Details", ""]
@@ -209,6 +216,7 @@ def run_check(
     max_app_pages: int = 75,
     timeout: float = 10.0,
 ) -> list[dict[str, object]]:
+    """Run the end-to-end crawl, comparison, and markdown report generation."""
     def _fetcher(url: str) -> str:
         return fetch_url(url, timeout=timeout)
 
