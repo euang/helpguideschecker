@@ -33,6 +33,7 @@ class CrawlAndCompareTests(unittest.TestCase):
         self.assertIn("https://app.example.com", crawled)
         self.assertIn("https://app.example.com/surveys", crawled)
         self.assertEqual(len(crawled), 2)
+        self.assertNotIn("https://other.example.com/x", crawled)
 
     def test_write_markdown_reports_creates_summary_and_detail(self):
         missing_details = [

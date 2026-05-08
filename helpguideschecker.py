@@ -65,6 +65,11 @@ class _Extractor(HTMLParser):
 
 
 def fetch_url(url: str, timeout: float = 10.0) -> str:
+    """Fetch URL content as UTF-8 text.
+
+    Raises:
+        OSError: Propagated network/HTTP errors from urllib.
+    """
     request = Request(url, headers={"User-Agent": "helpguideschecker/1.0"})
     with urlopen(request, timeout=timeout) as response:
         return response.read().decode("utf-8", errors="replace")
@@ -235,7 +240,8 @@ def main() -> None:
     )
 
     print(f"Compared {args.app_url} against {args.help_url}")
-    print(f"Generated {len(missing)} report files in {args.output_dir}")
+    total_files = len(missing) + 1
+    print(f"Generated {total_files} report files in {args.output_dir}")
 
 
 if __name__ == "__main__":
