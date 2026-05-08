@@ -242,7 +242,7 @@ def main() -> None:
 
     print(f"Compared {args.app_url} against {args.docs_url}")
     total_files = len(list(Path(args.output_dir).glob("*.md")))
-    print(f"Generated {total_files} report files in {args.output_dir}")
+    print(f"Generated {total_files} markdown files (including summary) in {args.output_dir}")
 
 
 if __name__ == "__main__":
